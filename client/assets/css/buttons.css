@@ -1,0 +1,10 @@
+.anybutton {
+    top:1%;
+    left:55%;
+    width:100px;
+    height:40px;
+    position: relative;
+    z-index: 2;
+    background: rgb(115, 115, 216); 
+    color:white;
+    }
