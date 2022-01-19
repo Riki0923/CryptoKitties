@@ -129,7 +129,7 @@ contract Kittycontract is IERC721, Ownable {
         return ownershipTokenCount[owner];
     }
 
-    function totalSupply()  external view returns (uint256 total){
+    function totalSupply()  external view returns (uint256){
         return kitties.length;
     }
 
@@ -154,7 +154,8 @@ contract Kittycontract is IERC721, Ownable {
     }
 
     function _own(address _claimant, uint256 _tokenId) public view returns(bool){
-        require(ownerOfToken[_tokenId] == _claimant, "This token does not belong to the owner");
+        if(ownerOfToken[_tokenId] == _claimant)
+        return true;      
     }
 
     function _transfer(address from, address to, uint _tokenId) internal{

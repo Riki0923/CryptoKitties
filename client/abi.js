@@ -328,7 +328,7 @@ var abi = [
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "total",
+        "name": "",
         "type": "uint256"
       }
     ],

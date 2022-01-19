@@ -32,7 +32,7 @@ function eyeColor(color,code) {
 }
 function earsColor(color,code) {
     $('.cat__ear--left, .cat__ear--right, .cat__paw-left, .cat__paw-right, .cat__paw-left_inner,.cat__paw-right_inner').css('background', '#' + color)  //This changes the color of the cat
-    $('#earcode').html('code: '+code) //This updates text of the badge next to the slider
+    $('#earscode').html('code: '+code) //This updates text of the badge next to the slider
     $('#dnaears').html(code) //This updates the body color part of the DNA that is displayed below the cat
 }
 
@@ -45,14 +45,13 @@ function eyeVariation(num) {
     $('#dnashape').html(num)
     switch (num) {
         case 1:
-            normalEyes()
             $('#eyeName').html('Basic')
-            break
-        case 2:
             normalEyes()
+            break;
+        case 2:
             $('#eyeName').html('Chill')
             eyesType1()
-            break
+            break;
            
     }
 }
@@ -61,28 +60,30 @@ function decorationVariation(num) {
     $('#dnadecoration').html(num)
     switch (num) {
         case 1:
-            $('#decorationName').html('Basic')
             normaldecoration()
-            break
+            $('#dotName').html('Basic')
+            dotType0()
+            break;
         case 2:
-            normaldecoration()
             $('#dotName').html('Degreed')
             dotType1()
-            break
+            break;
         case 3:
-            normaldecoration()
             $('#dotName').html('BigMidDot')
             dotType2()
-            break
+            break;
     }
 }
 function animationVariation(num){
     $('#dnaanimation').html(num);
     switch(num){
         case 1:
+            $('#animationName').html('movingHead')
             animationType1();
             break;
         case 2:
+            $('#animationName').html('movingEarLeft')
+            $('#animationName').html('movingEarRight')
             animationType2();
             break;
     }
@@ -119,6 +120,11 @@ function normaldecoration() {
     $('.cat__head-dots_first').css({ "transform": "rotate(0deg)", "height": "35px", "width": "14px", "top": "1px", "border-radius": "50% 0 50% 50%" })
     $('.cat__head-dots_second').css({ "transform": "rotate(0deg)", "height": "35px", "width": "14px", "top": "1px", "border-radius": "0 50% 50% 50%" })
 }
+
+function dotType0(){
+    $('.cat__head-dots').css({ "transform": "rotate(0deg)", "height": "48px", "width": "14px", "top": "1px", "border-radius": "0 0 50% 50%" })
+}
+
 function dotType1(){
     $('.cat__head-dots').css({ "transform": "rotate(0deg)", "height": "48px", "width": "14px", "top": "1px", "border-radius": "0 0 50% 50%" })
     $('.cat__head-dots_first').css({ "transform": "rotate(20deg)", "height": "35px", "width": "14px", "top": "1px", "border-radius": "50% 0 50% 50%" })
