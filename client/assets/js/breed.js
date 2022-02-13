@@ -1,10 +1,14 @@
-
 var web3 = new Web3(Web3.givenProvider);
 
 var instance;
 var user;
 var contractAddress = "0x2D64F7ca84cEb3b76847B3a2626f898475C9300e";
-var mktAddress = "0xE312d15534369a97b8CefB5E2Df9Dbf157851182";
+
+var momId;
+var dadId;
+var type;
+
+
 
 $(document).ready(function(){
     window.ethereum.enable().then(function(accounts){
@@ -12,51 +16,101 @@ $(document).ready(function(){
         user = accounts[0];
 
         console.log(instance);
-
-        mkt = new web3.eth.Contract(abimkt, mktAddress, {from: accounts[0]});
-        console.log(mkt);
-        printAllCats();
     })
+
+
+
+})
+$('#myModal').on('show.bs.modal', async function (e) {
+    $("#myModal .modal-body").empty();
+    await printAllCats(type == "mom" ? dadId : momId)
+        $("div.cat").click(async function(e){
+            console.log(this.id);
+            const kittyId = this.id.split("_")[1];
+            console.log(this.id.split("_"));
+            if(type == "mom"){
+                momId = kittyId;
+                console.log("momId is: " + momId);
+                let object = await instance.methods.getKitty(momId).call();
+                let catGen = object.generation;
+                const momImg = $("#momImg");
+                momImg.empty();
+                momImg.append(createCatBox(momId, object.genes, catGen));
+            }
+            else {
+                dadId = kittyId;
+                console.log("dadId is: " + dadId);
+                let object = await instance.methods.getKitty(dadId).call();
+                let catGen = object.generation;
+                const dadImg = $("#dadImg");
+                dadImg.empty();
+                dadImg.append(createCatBox(dadId, object.genes, catGen));
+            }
+
+      })
+    /*printAllCats().then(() => {
+        $("div.cat").click(function(e){
+            console.log(this);
+      })
+    });*/
 })
 
-$("#buttonSell").click(sellCat);
 
-async function printAllCats(){
-    var Owner;
-    var item;
-    var currentUser = ethereum.selectedAddress;
-    let items = [];
-    var allCatsId = [];
-    var catsCount = await instance.methods.totalSupply().call();
-    console.log("CATS COUNT: " + catsCount);
 
-    for(let i = 0; i < catsCount; i++){
-        Owner = await instance.methods._own(currentUser, i).call();
-        //console.log(Owner);
-        if(Owner){
-            allCatsId.push(i);
-        }
-    }
+
+
+     async function printAllCats(exception = null){
+        var Owner;
+        var item;
+        var currentUser = ethereum.selectedAddress;
+        let items = [];
+        var allCatsId = [];
+        var catsCount = await instance.methods.totalSupply().call();
+        console.log("CATS COUNT: " + catsCount);
     
-    for(let i = 0; i < allCatsId.length; i++){
-        let kittenId = allCatsId[i];
-        //console.log("Current Kitten Id: " + kittenId);
-        let object = await instance.methods.getKitty(allCatsId[i]).call();
-        let catGenes = object.genes;
-        //console.log("Current genes: " + catGenes);
-        let catBirthday = object.birthTime;
-        //console.log("Current Birthday: " + new Date(catBirthday * 1000));
-        let catMumId = object.mumId;
-        //console.log("Current MumId: " + catMumId);
-        let catDadId = object.dadId;
-        //console.log("Current DadId: " + catDadId);
-        let catGeneration = object.generation;
-        //console.log("Current Generation: " + catGeneration);
+        for(let i = 0; i < catsCount; i++){
+            Owner = await instance.methods._own(currentUser, i).call();
+            //console.log(Owner);
+            if(Owner){
+                allCatsId.push(i);
+            }
+        }
+        
+        for(let i = 0; i < allCatsId.length; i++){
+            let kittenId = allCatsId[i];
+            if(exception == kittenId){
+                continue;
+            }
+            console.log("Current Kitten Id: " + kittenId);
+            let object = await instance.methods.getKitty(allCatsId[i]).call();
+            let catGenes = object.genes;
+            //console.log("Current genes: " + catGenes);
+            let catBirthday = object.birthTime;
+            //console.log("Current Birthday: " + new Date(catBirthday * 1000));
+            let catMumId = object.mumId;
+            //console.log("Current MumId: " + catMumId);
+            let catDadId = object.dadId;
+            //console.log("Current DadId: " + catDadId);
+            let catGeneration = object.generation;
+            //console.log("Current Generation: " + catGeneration);
+    
+            
+            items.push(createCatBox(kittenId, catGenes, catGeneration));
+            //items.push(getItem(catGenes));
+        }
+         $("#myModal .modal-body").append(items.join(""));
 
-        createCatBox(kittenId, catGenes, catGeneration);
-        //items.push(getItem(catGenes));
     }
 
+    $("#dadImg").click(() =>{
+        $("#hideableContent2").hide();
+    })
+    
+    $("#momImg").click(() =>{
+        $("#hideableContent1").hide();
+    })
+
+        
     function createCatBox(id, catDetails, catGeneration){
         let bodyDna = catDetails.substring(0,2);
         //console.log("BODYDNA " + bodyDna);
@@ -79,11 +133,9 @@ async function printAllCats(){
         let lastDna = catDetails.substring(15,16);
         //console.log(lastDna);
         //console.log("Bodycolor: " + colors[earsDna]);
-        let catGen = catGeneration;
-        //console.log("catGen is: " +  catGen);
 
-        item =  `<div class="col-lg-3 catBox m-5 light-b-shadow style="width:250px">
-        <div class="cat" id="cat" style="min-height:266px">
+        let item =  `<div class="col-lg-11 catBox m-3 style="width:250px height:165px">
+        <div class="cat" id="cat_${id}" style="min-height:266px">
             <div class="cat__ear">
                 <div id="leftEar" class="` + (animDna == 2 ?'cat__ear--left movingEarLeft' : 'cat__ear--left') + `" style="background:#` + colors[earsDna] + `">
                     <div class="cat__ear--left-inside"></div>
@@ -185,6 +237,7 @@ async function printAllCats(){
                  <span id="dnadanimation"></span>
                  <span id="dnaspecial"></span>
             </b>
+
         </div>
         <div>
         <ul>
@@ -198,68 +251,42 @@ async function printAllCats(){
         ${decoShape == 1 ? "Basic Decoration" :(decoShape == 2 ? "Degreed Dots": "Big MidDot")}
         </li>
         <li>
-        ${"GEN: " + catGen}
+        ${"GEN: " + catGeneration}
         </li>
         </ul>
         </div>
-        <button class="btn btn-primary" type="button" data-toggle="modal" id="catId" data-target="#exampleModal" onclick="setId(` + id +`)" >Sell this cat</button>
-        <button class="btn btn-primary" type="button" onclick="removeOffer(` + id +`)" >Remove offer</button>
+        <button class="button" id="dame ` + id +`" onclick="setDame(`+ id +`)">Choose as Dame</button>
+        <button class="button" id="sire ` + id +`" onclick="setSire(`+ id +`)">Choose as Sire</button>
     </div>`;
 
-        items.push(item);
+        return item;
+
     }
-    
-    $(".row").append(items.join(""));
+
+var dame = null;
+var sire = null;
+
+async function setDame(id){
+ dame = id;
+ $("#dameId").html(id);
 }
 
-var cat = null;
-
-function setId(id){ // This just sets the id for the cat for the sellcat and removeCat function
-    cat = id;
+async function setSire(id){
+sire = id;
+$("#sireId").html(id);
 }
 
-async function sellCat(){
-    let price = $("#priceInput").val();
-    console.log("Price in ETH is: " + price);
-    let user = web3.currentProvider.selectedAddress;
-    console.log("User Address is: " + user);
-    let tokenId = cat;
-    console.log("catId you want to set offer for is: " + tokenId);
-    let approve = await instance.methods.isApprovedForAll(user, mktAddress).call();
-    if(approve == false){
-        await instance.methods.setApprovalForAll(mktAddress, true).send();
-
-        approve = await instance.methods.isApprovedForAll(user, mktAddress).call();
-        console.log("Mkt Address is now approved");
-        approve = await instance.methods.isApprovedForAll(user, contractAddress).call();
-        console.log("Contract address is also approved now");
-    }
-    let isOnSale = await mkt.methods.getOffer(tokenId).call();
-    console.log("IsOnSale Status: " + isOnSale.active);
-    if(isOnSale.active == true){
-        alert("this cat is already on the offer list, cannot be offered again");
-    }
-    else {
-        await mkt.methods.setOffer(web3.utils.toWei(price, "ether"), tokenId).send();
-        alert("Offer created, check it on marketplace");
-        console.log("price is: " + price);
-    }
-
-}
-
-async function removeOffer(id){
-    let idToRemove = id;
-    console.log("id you want to Remove is: " + idToRemove);
-    let user = web3.currentProvider.selectedAddress;
-    console.log("user address is" + user);
-    let catOnOffer = await mkt.methods.getOffer(idToRemove).call();
-    if(catOnOffer.active == false){
-        alert("You cannot remove this cat from list as it was not offered to Marketplace yet!");
-
-    }
-    else {
-        await mkt.methods.removeOffer(idToRemove).send();
-        alert("You succesfully removed this cat from Marketplace offer")
-    }
-
-}
+$("#BreedButton").click(async function(){
+    let momData = await instance.methods.getKitty(dame).call();
+    console.log(momData);
+    let momGenes = momData.genes;
+    console.log("the mom Genes should be" + momGenes);
+    let dadData = await instance.methods.getKitty(sire).call();
+    console.log( dadData);
+    let dadGenes = dadData.genes;
+    console.log("the dad Genes should be" + dadGenes);
+    var newDnaMix = dadGenes.slice(0,8) + momGenes.slice(8,16);
+    console.log("the new Dna mix should be" + newDnaMix);
+    await instance.methods.breed(sire,dame).send();
+    alert("Go back to your Catalouge page to see your new Kitty!");
+});

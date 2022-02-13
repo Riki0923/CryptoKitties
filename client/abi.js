@@ -81,6 +81,12 @@ var abi = [
         "internalType": "uint256",
         "name": "genes",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "generation",
+        "type": "uint256"
       }
     ],
     "name": "Birth",
@@ -215,6 +221,32 @@ var abi = [
     ],
     "payable": false,
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_dadId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_mumId",
+        "type": "uint256"
+      }
+    ],
+    "name": "breed",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

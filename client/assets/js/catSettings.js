@@ -49,40 +49,40 @@ function getDna(){
 }
 
 function renderCat(dna){
-    console.log("dna is: " + dna);
+    //console.log("dna is: " + dna);
     headColor(colors[dna.headcolor],dna.headcolor)
     $('#bodycolor').val(dna.headcolor)
-    console.log("headcolor function is: " + headColor);
-    console.log("dna.headcolor is: " + dna.headcolor);
+    //console.log("headcolor function is: " + headColor);
+    //console.log("dna.headcolor is: " + dna.headcolor);
 
     mouthColor(colors[dna.mouthColor],dna.mouthColor)
     $('#mouthcolor').val(dna.mouthColor)
     //console.log("mouthcolor is:" + mouthColor);
-    console.log("dna.mouthcolor is: " + dna.mouthColor)
+    //console.log("dna.mouthcolor is: " + dna.mouthColor)
 
     eyeColor(colors[dna.eyesColor],dna.eyesColor)
     $('#eyecolor').val(dna.eyesColor)
    //console.log(eyeColor);
-    console.log("dna.eyescolor is: " + dna.eyesColor)
+    //console.log("dna.eyescolor is: " + dna.eyesColor)
 
     earsColor(colors[dna.earsColor],dna.earsColor)
     $('#earcolor').val(dna.earsColor)
     //console.log(earsColor);
-    console.log("earsColor.dna is: " + dna.earsColor);
+    //console.log("earsColor.dna is: " + dna.earsColor);
 
     eyeVariation(dna.eyesShape)
     $('#eyeshape').val(dna.eyesShape)
     //console.log(eyeVariation);
-    console.log("eyesShape.dna is: " + dna.eyesShape);
+    //console.log("eyesShape.dna is: " + dna.eyesShape);
 
     decorationVariation(dna.decorationPattern)
     $('#decorationPattern').val(dna.decorationMidcolor)
     //console.log(decorationVariation);
-    console.log("dna.decorationpattern is: " + dna.decorationPattern);
+    //console.log("dna.decorationpattern is: " + dna.decorationPattern);
 
     animationVariation(dna.animation)
     $('#animation').val(dna.animation)
-    console.log("dna.animation is: " + dna.animation);
+    //console.log("dna.animation is: " + dna.animation);
     //console.log(animationVariation);
 
 }

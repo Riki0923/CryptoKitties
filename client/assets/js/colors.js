@@ -104,3 +104,4 @@ function allColors(){
 return colors;
 
 }
+

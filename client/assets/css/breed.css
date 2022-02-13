@@ -1,3 +1,29 @@
+.catBox {
+    background-color: #e2efff;
+    border-radius: 10px;
+    padding-top: 50px;
+    padding-left: 65px;
+    padding-bottom: 100px;
+}
+
+.cattributes {
+    padding: 25px;
+    background-color: #ededed;
+    border-radius: 10px;
+}
+
+.space {
+    position: relative;
+    margin: auto;
+}
+
+.dnaDiv {
+    position: absolute;
+    left:20px;
+    bottom: 5px;
+
+}
+
 .header-container {
     display:flex;
     background-color: white;
@@ -20,9 +46,17 @@
     
 }
 .picture {
-    width: 300px;
-    height: 300px;
-    margin: 0 auto 0 auto;
+    position: relative;
+    margin: auto;
+    height: 200px;
+    outline: 5px ridge rgba(170,170,170,0.68);
+    outline-offset: 50px;
+    transition: outline-width 0.1s linear;
+    top: 75px;
+}
+
+.picture:hover{
+    outline-width: 0px;
 }
 
 .title{
@@ -32,43 +66,39 @@
 }
 
 .redcarpet {
-    background: #A43030;
-    background: -moz-linear-gradient(left, #A43030 0%, #C4722C 100%);
-    background: -webkit-linear-gradient(left, #A43030 0%, #C4722C 100%);
-    background: linear-gradient(to right, #A43030 0%, #C4722C 100%);
+    background-color: white;
     padding: 25px;
 }
 
 .redcarpet2{
-background: #A43030;
-background: -moz-linear-gradient(left, #A43030 0%, #C4722C 100%);
-background: -webkit-linear-gradient(left, #A43030 0%, #C4722C 100%);
-background: linear-gradient(to right, #A43030 0%, #C4722C 100%);
+background: white;
 height: 100px;
+border-top: 4px solid rgb(148, 129, 129);
 }
 
 .whitecarpet {
     background: white;
     height:30rem;
+    display: flex;
+    justify-content: row;
 }
 
 .whiteCarpet2{
     background: white;
-    height: 20rem;
+    height: 12rem;
+
 }
 
 .littleBox {
     max-width: 35rem;
-    background: rgba(51, 47, 47, 0.397);
+    background: white;
     position: relative;
     margin-left: auto;
     margin-right: auto;
     border-radius: 10%;
     display: flex;
+    padding: 2%;
     flex-direction: column;
-    flex-direction: center;
-    justify-content: center;
-    padding: 3%;
 }
 
 .whiteMessage {
@@ -80,39 +110,42 @@ height: 100px;
     margin-bottom: 10px;
 }
 
-.whiteMessage2{
-    color:white;
+.blackMessage{
+    color:black;
     font-size:2.5rem;
     text-align: center;
 }
 
-.button {
-    color: brown;
-    font-size: 14px;
-    font-style: italic;
-    text-shadow: 1px 2px 2px rgb(28 110 164 / 44%);
-    align-items: center;
-    width: 9rem;
-    height: 2.5rem;
-    border-radius: 44px;
-    font-weight: bolder;
+.blackMessage2 {
+    color:black;
+    font-size:1.5rem;
     text-align: center;
-    margin-left: auto;
-    margin-right: auto;
 }
 
-.breedButton{
+.blackMessage3 {
+    padding-top: 10rem;
+    margin:auto;
+    color:black;
+    font-size:1rem;
+    text-align: center;
+}
+
+.button {
+    position: relative;
+    margin:auto;
     color: white;
+    background-color: grey;
     font-size: 14px;
-    background-color: rgb(207, 113, 36);
-    font-style: italic;
-    background-image: linear-gradient(to right, rgb(226, 83, 47) 0%, rgb(228, 173, 55) 50%, rgb(224, 110, 17) 100%);
+    font-style: oblique;
     align-items: center;
-    width: 9rem;
+    width: 15rem;
     height: 2.5rem;
     border-radius: 44px;
-    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
 }
+
 
 @media screen and (min-width: 900px) {
     .menu-list{

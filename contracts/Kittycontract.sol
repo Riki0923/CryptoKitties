@@ -23,17 +23,18 @@ contract Kittycontract is IERC721, Ownable {
         uint256 kittenId, 
         uint256 mumId, 
         uint256 dadId, 
-        uint256 genes);
+        uint256 genes,
+        uint256 generation);
     
     event approvalForAll(address indexed owner, address indexed operator, bool approved);
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
 
     struct Kitty {
         uint256 genes;
-        uint64 birthTime;
-        uint32 mumId;
-        uint32 dadId;
-        uint16 generation;
+        uint256 birthTime;
+        uint256 mumId;
+        uint256 dadId;
+        uint256 generation;
     }
 
     Kitty [] kitties;
@@ -43,32 +44,37 @@ contract Kittycontract is IERC721, Ownable {
     mapping(uint256 => address) public kittyIndexToApproved; // Who has ownership of the given token
     mapping(address => mapping(address => bool)) private _operatorApprovals; // MYADDR => OPERATORADDR => True/False
 
-  /*  function breed(uint256 _mumId, uint256 _dadId) public returns (uint256){
+
+    constructor() public {
+        _createKitty(0, 0, 0, uint256(-1), address(0));
+    }
+
+    function breed(uint256 _dadId, uint256 _mumId) public returns (uint256){
         require(_own(msg.sender, _dadId));
         require(_own(msg.sender, _mumId));
         //You got the DNA
+        uint256 newGenes = _mixDna(kitties[_dadId].genes, kitties[_mumId].genes);
 
-        (uint256 dadDna,,,,uint256 DadGeneration) = getKitty(_dadId);
-        (uint256 mumDna,,,,uint256 MumGeneration) = getKitty(_mumId);
-
-        _mixDna(_dadId, _mumId);
-
-        uint256 kidGeneration = 0;
-        if(DadGeneration < MumGeneration){
-            kidGeneration = MumGeneration + 1;
-            kidGeneration /=2;
-        }
-        else if(DadGeneration > MumGeneration){
-            kidGeneration = DadGeneration + 1;
-            kidGeneration /= 2;
-        }
-        else {
-            kidGeneration = MumGeneration + 1;
-        }
+        uint256 newGeneration;
         //Figure out the Generation
-        _createKitty(_mumId, _dadId, kidGeneration, newDna, msg.sender);  //Create a new cat with the new properties, give it to the msg.sender
+        if(kitties[_dadId].generation + kitties[_mumId].generation == 0){
+            newGeneration = 1;
+        }
+        else if(kitties[_dadId].generation > kitties[_mumId].generation ){
+            newGeneration = kitties[_dadId].generation;
+        }
 
-    }*/
+        else if(kitties[_dadId].generation < kitties[_mumId].generation){
+            newGeneration = kitties[_mumId].generation;
+        }
+
+        else {
+            newGeneration = kitties[_dadId].generation + kitties[_mumId].generation;
+        }
+
+        //Create a new cat with the new properties, give it to the msg.sender
+        _createKitty(_mumId, _dadId, newGeneration, newGenes, msg.sender);
+    }
     
 
     function supportsInterface(bytes4 _interfaceId) public view returns (bool){
@@ -92,13 +98,19 @@ contract Kittycontract is IERC721, Ownable {
         uint256 dadId,
         uint256 generation
     ){
-        Kitty storage kitty = kitties[_id];
+        return 
+       (kitties[_id].genes,
+        kitties[_id].birthTime,
+        kitties[_id].mumId,
+        kitties[_id].dadId,
+        kitties[_id].generation);
+       /* Kitty storage kitty = kitties[_id];
 
         birthTime = uint256(kitty.birthTime);
         mumId = uint256(kitty.mumId);
         dadId = uint256(kitty.dadId);
         generation = uint256(kitty.generation);
-        genes = uint256(kitty.genes);
+        genes = uint256(kitty.genes);*/
     }
 
     function _createKitty(
@@ -117,7 +129,7 @@ contract Kittycontract is IERC721, Ownable {
         });
         uint newKittenId = kitties.push(_kitty) - 1;
 
-        emit Birth(owner, newKittenId, _mumId, _dadId, _genes);
+        emit Birth(owner, newKittenId, _mumId, _dadId, _genes, _generation);
 
        _transfer(address(0), owner, newKittenId);
 
@@ -154,11 +166,12 @@ contract Kittycontract is IERC721, Ownable {
     }
 
     function _own(address _claimant, uint256 _tokenId) public view returns(bool){
-        if(ownerOfToken[_tokenId] == _claimant)
-        return true;      
+        return ownerOfToken[_tokenId] == _claimant;
+       // if(ownerOfToken[_tokenId] == _claimant)
+       // return true;      
     }
 
-    function _transfer(address from, address to, uint _tokenId) internal{
+    function _transfer(address from, address to, uint _tokenId) public{
 
         ownerOfToken[_tokenId] = to;
 
@@ -202,9 +215,9 @@ contract Kittycontract is IERC721, Ownable {
         kittyIndexToApproved[_tokenId] = _approved;
     }
 
-    function transferFrom(address _from, address _to,uint256 _tokenId) external{
-        require(_own(_from, _tokenId), "msg.sender is not the current owner!");
-        require(isApprovedForAll(_from, msg.sender) || _approvedFor(msg.sender, _tokenId)  || msg.sender == _from);
+    function transferFrom(address _from, address _to, uint256 _tokenId) public{
+        require(isApprovedForAll(_from, msg.sender) || msg.sender == kittyIndexToApproved[_tokenId]  || msg.sender == _from, "Only Owner, Operator or Approved Addresses can transfer!");
+        require(_own(_from, _tokenId), "Owner address is not connected to this token!");
         require(address(0)!= _to, "receiver cannot be 0 address!");
         require(_tokenId < kitties.length);
 

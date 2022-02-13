@@ -1,63 +1,69 @@
-
 var web3 = new Web3(Web3.givenProvider);
 
 var instance;
 var user;
-var contractAddress = "0x2D64F7ca84cEb3b76847B3a2626f898475C9300e";
-var mktAddress = "0xE312d15534369a97b8CefB5E2Df9Dbf157851182";
+var kittyAddress = "0x2D64F7ca84cEb3b76847B3a2626f898475C9300e";
+var marketAddress = "0xE312d15534369a97b8CefB5E2Df9Dbf157851182";
 
-$(document).ready(function(){
+
+$(document).ready(function (){
     window.ethereum.enable().then(function(accounts){
-        instance = new web3.eth.Contract(abi, contractAddress, {from: accounts[0]});
+        market = new web3.eth.Contract(abimkt, marketAddress, {from: accounts[0]});
         user = accounts[0];
 
-        console.log(instance);
+        console.log(market);
 
-        mkt = new web3.eth.Contract(abimkt, mktAddress, {from: accounts[0]});
-        console.log(mkt);
+        instance = new web3.eth.Contract(abi, kittyAddress, {from: accounts[0]});
+        console.log(instance);
         printAllCats();
     })
 })
 
-$("#buttonSell").click(sellCat);
 
 async function printAllCats(){
-    var Owner;
-    var item;
-    var currentUser = ethereum.selectedAddress;
-    let items = [];
-    var allCatsId = [];
-    var catsCount = await instance.methods.totalSupply().call();
-    console.log("CATS COUNT: " + catsCount);
 
-    for(let i = 0; i < catsCount; i++){
-        Owner = await instance.methods._own(currentUser, i).call();
-        //console.log(Owner);
-        if(Owner){
-            allCatsId.push(i);
-        }
+ var offered;
+ var item;
+ var currentUser = ethereum.selectedAddress;
+ let items = [];
+ var allCatsforSale = [];
+ var priceArray = [];
+ var marketCatsCount = await instance.methods.totalSupply().call();
+ console.log("Cat number on Market is: " + marketCatsCount);
+
+ for(let i = 0; i < marketCatsCount; i++){
+
+    offered = await market.methods.getOffer(i).call();
+    if(offered.active == true){
+        allCatsforSale.push(i);
     }
-    
-    for(let i = 0; i < allCatsId.length; i++){
-        let kittenId = allCatsId[i];
-        //console.log("Current Kitten Id: " + kittenId);
-        let object = await instance.methods.getKitty(allCatsId[i]).call();
-        let catGenes = object.genes;
-        //console.log("Current genes: " + catGenes);
-        let catBirthday = object.birthTime;
-        //console.log("Current Birthday: " + new Date(catBirthday * 1000));
-        let catMumId = object.mumId;
-        //console.log("Current MumId: " + catMumId);
-        let catDadId = object.dadId;
-        //console.log("Current DadId: " + catDadId);
-        let catGeneration = object.generation;
-        //console.log("Current Generation: " + catGeneration);
+ }
 
-        createCatBox(kittenId, catGenes, catGeneration);
-        //items.push(getItem(catGenes));
-    }
+ for(let i = 0; i < allCatsforSale.length; i ++){
 
-    function createCatBox(id, catDetails, catGeneration){
+     let saleId = allCatsforSale[i];
+     //console.log("Current sale Id is: " + saleId);
+     let offer = await market.methods.getOffer(allCatsforSale[i]).call();
+     //console.log(offer);
+     let sellPrice = offer.price;
+     //console.log(sellPrice);
+     let object = await instance.methods.getKitty(allCatsforSale[i]).call();
+     let catGenes = object.genes;
+     //console.log("Current genes: " + catGenes);
+     let catBirthday = object.birthTime;
+     //console.log("Current Birthday: " + new Date(catBirthday * 1000));
+     let catMumId = object.mumId;
+     //console.log("Current MumId: " + catMumId);
+     let catDadId = object.dadId;
+     //console.log("Current DadId: " + catDadId);
+     let catGeneration = object.generation;
+     //console.log("Current Generation: " + catGeneration);
+
+     createCatBox(saleId, catGenes, catGeneration, sellPrice);
+     //items.push(getItem(catGenes));
+ }
+
+    function createCatBox(id, catDetails, catGeneration, price){
         let bodyDna = catDetails.substring(0,2);
         //console.log("BODYDNA " + bodyDna);
         let mouthDna = catDetails.substring(2,4);
@@ -81,8 +87,11 @@ async function printAllCats(){
         //console.log("Bodycolor: " + colors[earsDna]);
         let catGen = catGeneration;
         //console.log("catGen is: " +  catGen);
+       // let priceForSell = price / 1000000000000000000;
+      //  console.log("PriceForSell is:" + priceForSell);
 
-        item =  `<div class="col-lg-3 catBox m-5 light-b-shadow style="width:250px">
+
+        item = `<div class="col-lg-3 catBox m-5 light-b-shadow style="width:250px">
         <div class="cat" id="cat" style="min-height:266px">
             <div class="cat__ear">
                 <div id="leftEar" class="` + (animDna == 2 ?'cat__ear--left movingEarLeft' : 'cat__ear--left') + `" style="background:#` + colors[earsDna] + `">
@@ -200,66 +209,52 @@ async function printAllCats(){
         <li>
         ${"GEN: " + catGen}
         </li>
+        <li>
+        ${"Price: " + price / 1000000000000000000 + " ETH" }
+        </li>
         </ul>
         </div>
-        <button class="btn btn-primary" type="button" data-toggle="modal" id="catId" data-target="#exampleModal" onclick="setId(` + id +`)" >Sell this cat</button>
-        <button class="btn btn-primary" type="button" onclick="removeOffer(` + id +`)" >Remove offer</button>
+        <button class="btn btn-primary" type="button" onclick="buyCat(` + id +`)" >Buy me</button>
     </div>`;
 
         items.push(item);
     }
-    
-    $(".row").append(items.join(""));
+
+    $(".row").append(items.join("")); // "" This mark will get rid of the , between the boxes 
+
 }
 
-var cat = null;
+var catOnSale = null;
 
 function setId(id){ // This just sets the id for the cat for the sellcat and removeCat function
-    cat = id;
+    catOnSale = id;
 }
 
-async function sellCat(){
-    let price = $("#priceInput").val();
-    console.log("Price in ETH is: " + price);
-    let user = web3.currentProvider.selectedAddress;
-    console.log("User Address is: " + user);
-    let tokenId = cat;
-    console.log("catId you want to set offer for is: " + tokenId);
-    let approve = await instance.methods.isApprovedForAll(user, mktAddress).call();
-    if(approve == false){
-        await instance.methods.setApprovalForAll(mktAddress, true).send();
 
-        approve = await instance.methods.isApprovedForAll(user, mktAddress).call();
-        console.log("Mkt Address is now approved");
-        approve = await instance.methods.isApprovedForAll(user, contractAddress).call();
-        console.log("Contract address is also approved now");
-    }
-    let isOnSale = await mkt.methods.getOffer(tokenId).call();
-    console.log("IsOnSale Status: " + isOnSale.active);
-    if(isOnSale.active == true){
-        alert("this cat is already on the offer list, cannot be offered again");
-    }
-    else {
-        await mkt.methods.setOffer(web3.utils.toWei(price, "ether"), tokenId).send();
-        alert("Offer created, check it on marketplace");
-        console.log("price is: " + price);
-    }
+async function buyCat(id){
+ let user = web3.currentProvider.selectedAddress;
+ //console.log("User that wants to buy the cat is: " + user);
+ let idToBuy = id;
+ //console.log("The cat Id you want to buy is: " + idToBuy);
+ let isApproved = await instance.methods.isApprovedForAll(user, marketAddress).call();
+ let offerOfCat = await market.methods.getOffer(idToBuy).call();
+ //console.log(offerOfCat);
+ let priceOfCat = offerOfCat.price;
+ //console.log(priceOfCat);
 
-}
+ if(offerOfCat.seller == web3.currentProvider.selectedAddress){ // muti meg gellértnek
+     alert("You cannot buy your own kitty!");
+ }
 
-async function removeOffer(id){
-    let idToRemove = id;
-    console.log("id you want to Remove is: " + idToRemove);
-    let user = web3.currentProvider.selectedAddress;
-    console.log("user address is" + user);
-    let catOnOffer = await mkt.methods.getOffer(idToRemove).call();
-    if(catOnOffer.active == false){
-        alert("You cannot remove this cat from list as it was not offered to Marketplace yet!");
-
-    }
-    else {
-        await mkt.methods.removeOffer(idToRemove).send();
-        alert("You succesfully removed this cat from Marketplace offer")
-    }
-
+ else if(isApproved == false){
+     await instance.methods.setApprovalForAll(marketAddress, true).send();
+     //console.log("Market Address is now Approved for buy");
+     isApproved = await instance.methods.isApprovedForAll(user, marketAddress).call();
+     //console.log("is now approved: " + isApproved);   
+ }
+ else {
+     //console.log("Market Address is already approved to Buy");
+     await market.methods.buyKitty(idToBuy).send({value: priceOfCat});
+     alert("Kittie bought! Check it on your Catalouge page")
+ }
 }
