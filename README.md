@@ -11,7 +11,7 @@ Languages used for this project: Solidity, Javascript, CSS, HTML. Truffle has be
 - cd "the folder where the index.html file can be found".
 - run python3 -m http.server 8000
 
-With this your localhost has been set up, all you need to do now is migrate in truffle and set up a metamask.
+With this your localhost has been set up, all you need to do now is migrate in truffle and set up a metamask. I highly recommend to add 2 accounts so you will be able to see the buy & sell part in the contract.
 
 In truffle run: truffle migrate ( or truffle migrate --reset )
 - Change the addresses in index.js, catalouge.js, marketplace.js and breed.js file for the addresses the migrate gives out to you. 
